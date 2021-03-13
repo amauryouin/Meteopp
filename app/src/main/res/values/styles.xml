@@ -1,0 +1,45 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:spinnerItemStyle">@style/DefaultTextStyle</item>
+        <item name="android:spinnerDropDownItemStyle">@style/DefaultTextStyle</item>
+    </style>
+
+    <!-- Texte par défaut -->
+    <style name="DefaultTextStyle">
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/kanit</item>
+        <item name="android:shadowRadius">2</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowColor">@color/divider</item>
+    </style>
+
+    <!--Texte de détail -->
+    <style name="DetailTextStyle" parent="DefaultTextStyle">
+        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Texte de titre -->
+    <style name="TitleTextStyle" parent="DefaultTextStyle">
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">4</item>
+    </style>
+
+    <!-- Texte de sous-titre -->
+    <style name="SubtitleTextStyle" parent="TitleTextStyle">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+
+
+</resources>

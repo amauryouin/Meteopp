@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Meteopp</string>
+
+    ////////////////////////////////////
+    //////    Page d'accueil      //////
+    ////////////////////////////////////
+
+    //Infos principales
+    <string name="home_default_day">Aujourd\'hui à 10h</string>
+    <string name="home_default_date">Le 03/03/21</string>
+    <string name="home_default_realtime_temp">19°C</string>
+    <string name="home_default_realtime_felt_temp">Ressenti 17°C</string>
+
+
+    //Infos secondaires
+    <string name="home_default_max_temp">25°C</string>
+    <string name="home_default_min_temp">16°C</string>
+    <string name="home_default_wind">30km/h</string>
+    <string name="home_default_humidity">56%</string>
+
+    //Meteo des X prochains jours
+    <string name="home_planning">A venir</string>
+    <string name="home_week_monday">Lundi</string>
+    <string name="home_week_tuesday">Mardi</string>
+    <string name="home_week_wednesday">Mercredi</string>
+    <string name="home_week_thursday">Jeudi</string>
+    <string name="home_week_friday">Jeudi</string>
+    <string name="home_week_saturday">Jeudi</string>
+    <string name="home_week_sunday">Jeudi</string>
+
+    //Infos périphériques
+    <string name="background_image_alt_title">Background image unavailable</string>
+
+</resources>
