@@ -9,13 +9,13 @@ class Main : Serializable {
     var temp: Double? = null
 
     @Json(name = "feels_like")
-    var feelsLike: Double? = null
+    var feels_like: Double? = null
 
     @Json(name = "temp_min")
-    var tempMin: Double? = null
+    var temp_min: Double? = null
 
     @Json(name = "temp_max")
-    var tempMax: Double? = null
+    var temp_max: Double? = null
 
     @Json(name = "pressure")
     var pressure: Int? = null

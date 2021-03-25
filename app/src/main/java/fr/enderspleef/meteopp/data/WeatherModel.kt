@@ -1,7 +1,6 @@
-package fr.enderspleef.meteopp
+package fr.enderspleef.meteopp.data
 
 import com.squareup.moshi.Json
-import fr.enderspleef.meteopp.data.*
 import java.io.Serializable
 
 class WeatherModel : Serializable {

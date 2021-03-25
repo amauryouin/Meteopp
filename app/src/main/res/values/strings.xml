@@ -9,7 +9,7 @@
     <string name="home_default_day">Aujourd\'hui à 10h</string>
     <string name="home_default_date">Le 03/03/21</string>
     <string name="home_default_realtime_temp">19°C</string>
-    <string name="home_default_realtime_felt_temp">Ressenti 17°C</string>
+    <string name="home_default_realtime_felt_temp">Ressenti %1$s</string>
 
 
     //Infos secondaires
