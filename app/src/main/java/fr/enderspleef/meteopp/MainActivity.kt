@@ -1,15 +1,17 @@
 package fr.enderspleef.meteopp
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import fr.enderspleef.meteopp.data.WeatherModel
 import fr.enderspleef.meteopp.data.WeatherSimpleObject
 import fr.enderspleef.meteopp.databinding.ActivityMainBinding
+import fr.enderspleef.meteopp.time.Time
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Math.round
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
@@ -27,11 +29,18 @@ companion object{
 
 }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //test de l'appel de date
+        val time: Time = Time()
+        time.initialize()
+        binding.homeTodayTextview.text = getString(R.string.home_default_day, time.getTime())
+        binding.homeDateTextview.text = getString(R.string.home_default_date, time.getDate())
 
         OpenWeatherApi().callWeatherData().enqueue(object : Callback<WeatherModel> {
                 override fun onResponse(
@@ -81,7 +90,7 @@ companion object{
 
     fun displayHomeWeather(){
         binding.homeRealtimeTemp.setText(fromKelvinToDegre(weatherObject.temp!!))
-        binding.homeRealtimeFeltTemp.text = getString(R.string.home_default_realtime_felt_temp, fromKelvinToDegre(weatherObject.feltTemp!!).toString() + "°C")
+        binding.homeRealtimeFeltTemp.text = getString(R.string.home_default_realtime_felt_temp, fromKelvinToDegre(weatherObject.feltTemp!!))
         binding.homeWind.setText(fromMsToKmh(weatherObject.windSpeed!!))
         binding.homeHumidity.setText(weatherObject.humidity.toString() + "%")
         binding.homeMaxTemp.setText(fromKelvinToDegre(weatherObject.maxTemp!!))

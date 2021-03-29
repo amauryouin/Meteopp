@@ -37,7 +37,7 @@
 
     <!-- Texte de sous-titre -->
     <style name="SubtitleTextStyle" parent="TitleTextStyle">
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
 
