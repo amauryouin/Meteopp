@@ -2,7 +2,6 @@ package fr.enderspleef.meteopp
 
 import fr.enderspleef.meteopp.OpenWeatherApi.Singleton.api_key
 import fr.enderspleef.meteopp.OpenWeatherApi.Singleton.baseUrl
-import fr.enderspleef.meteopp.OpenWeatherApi.Singleton.localCity
 import fr.enderspleef.meteopp.data.WeatherModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,11 +9,10 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class OpenWeatherApi {
+class OpenWeatherApi(var city: String) {
 
     object Singleton{
         val baseUrl = "https://api.openweathermap.org/data/2.5/"
-        val localCity = "Paris"
         val api_key = "d50a25eab8c0d08e2059faa703d11f94"
     }
 
@@ -29,7 +27,7 @@ class OpenWeatherApi {
             .build()
 
         val service = retrofit.create(OpenWeatherService::class.java)
-        val weatherCall = service.getCurrentWeather(localCity, api_key)
+        val weatherCall = service.getCurrentWeather(city, api_key)
         return weatherCall
     }
 }

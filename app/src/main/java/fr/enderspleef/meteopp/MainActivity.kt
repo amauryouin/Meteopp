@@ -45,9 +45,10 @@ companion object{
     //on crée une instance de requête de localisation (service google)
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationRequest: LocationRequest
-
 }
 
+    var lat: Double = 0.0
+    var long: Double = 0.0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,33 +59,40 @@ companion object{
         //test de l'appel de date
         val time: Time = Time()
         time.initialize()
-
-        //on initialise le client de géolocalisation
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
         //on affiche
         binding.homeTodayTextview.text = getString(R.string.home_default_day, time.getTime())
         binding.homeDateTextview.text = getString(R.string.home_default_date, time.getDate())
 
-        //on call les données de manière asynchrone avec enqueue
-        OpenWeatherApi().callWeatherData().enqueue(object : Callback<WeatherModel> {
-            //dans le cas d'une réponse positive
-                override fun onResponse(
-                    call: Call<WeatherModel>,
-                    response: Response<WeatherModel>
-                ) {
-                    if (!response.isSuccessful) {
-                        Log.e(debugTag, "Données non récupérées...")
-                    }else {
-                        fillWeatherObject(response.body()!!)
-                        displayHomeWeather()
-                    }
-                }
+        //on initialise le client de géolocalisation
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        //ceci est un enchainement de 3 instructions chainées par 2 callbacks
+        //1 on demande la permission de géolocalisation a l'utilisateur
+        //2 on récupère les données lat et long
+        //3 on call les données de manière asynchrone avec enqueue
+        requestPermission{
+            getLastLocation {
+                OpenWeatherApi(getCityName(lat, long))
+                        .callWeatherData()
+                        .enqueue(object : Callback<WeatherModel> {
+                            //dans le cas d'une réponse positive
+                            override fun onResponse(
+                                    call: Call<WeatherModel>,
+                                    response: Response<WeatherModel>
+                            ) {
+                                if (!response.isSuccessful) {
+                                    Log.e(debugTag, "Données non récupérées...")
+                                } else {
+                                    fillWeatherObject(response.body()!!)
+                                    displayHomeWeather()
+                                }
+                            }
 
-                override fun onFailure(call: Call<WeatherModel>, t: Throwable) {
-                    Log.e(debugTag, "$t")
-                }
-            })
+                            override fun onFailure(call: Call<WeatherModel>, t: Throwable) {
+                                Log.e(debugTag, "$t")
+                            }
+                        })
+            }
+        }
     }
 
     //convertit les Kelvins en degrés celsius
@@ -119,7 +127,7 @@ companion object{
         binding.homeRealtimeTemp.setText(fromKelvinToDegre(weatherObject.temp!!))
         binding.homeRealtimeFeltTemp.text = getString(R.string.home_default_realtime_felt_temp, fromKelvinToDegre(weatherObject.feltTemp!!))
         binding.homeWind.setText(fromMsToKmh(weatherObject.windSpeed!!))
-        binding.homeHumidity.setText(weatherObject.humidity.toString() + "%")
+        binding.homeHumidity.setText(fromBlankToPourcent(weatherObject.humidity!!))
         binding.homeMaxTemp.setText(fromKelvinToDegre(weatherObject.maxTemp!!))
         binding.homeMinTemp.setText(fromKelvinToDegre(weatherObject.minTemp!!))
     }
@@ -139,12 +147,13 @@ companion object{
     }
 
     //on demande la permission de géolocalisation
-    private fun requestPermission(){
+    private fun requestPermission(Callback: () -> Unit){
         ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 PERMISSION_ID
         )
+        Callback()
     }
 
     //on vérifie si la géolocalisation est activée sur l'appareil
@@ -166,36 +175,39 @@ companion object{
         }
     }
 
-    private fun getLastLocation(){
+    private fun getLastLocation(callback: () -> Unit){
         //on vérifie la permission
         if(checkPermission()){
             //puis l'activation
             if(isLocationEnabled()){
+
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener{task ->
                     var location: Location? = task.result
                     if(location == null){
-
+                        getNewLocation()
+                        callback()
                     }else{
-                        Toast.makeText(this, "Vous vous situez aux coordonnées : \nLat:"
-                                + location.latitude
-                                + " ; Long:" + location.longitude
-                                + "\n Ville:" + getCityName(location.latitude, location.longitude)
-                                + "\n Pays:" + getCountryName(location.latitude, location.longitude)
-                        ,Toast.LENGTH_SHORT)
+                        Log.d(debugTag, location.longitude.toString())
+                        lat = location.latitude
+                        long = location.longitude
+                        callback()
                     }
                 }
             }else{
                 Toast.makeText(this, "Veuillez activer la localisation pour bénéficier des infos en temps réel", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
     private fun getNewLocation(){
-        locationRequest = LocationRequest()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 0
-        locationRequest.fastestInterval = 0
-        locationRequest.numUpdates = 2
+        locationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 0
+            fastestInterval = 0
+            numUpdates = 2
+        }
+
         fusedLocationProviderClient!!.requestLocationUpdates(
                 locationRequest, locationCallback, Looper.myLooper()
         )
@@ -204,12 +216,8 @@ companion object{
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(p0: LocationResult) {
             var lastLocation: Location = p0.lastLocation
-            Toast.makeText(applicationContext, "Vous vous situez aux coordonnées : \nLat:"
-                    + lastLocation.latitude
-                    + " ; Long:" + lastLocation.longitude
-                    + "\n Ville:" + getCityName(lastLocation.latitude, lastLocation.longitude)
-                    + "\n Pays:" + getCountryName(lastLocation.latitude, lastLocation.longitude)
-            , Toast.LENGTH_SHORT)
+            lat = lastLocation.latitude
+            long = lastLocation.longitude
         }
     }
 
@@ -219,6 +227,7 @@ companion object{
         var geoCoder = Geocoder(this, Locale.getDefault())
         var Address : List<Address> = geoCoder.getFromLocation(lat, long, 1)
         cityName = Address.get(0).locality
+        Log.d(debugTag, cityName)
         return cityName
     }
 
